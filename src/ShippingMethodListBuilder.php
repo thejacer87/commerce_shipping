@@ -76,7 +76,9 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
    */
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\commerce_shipping\Entity\ShippingMethodInterface $entity */
-    $row['#attributes']['class'][] = 'draggable';
+    if ($this->hasTableDrag) {
+      $row['#attributes']['class'][] = 'draggable';
+    }
     $row['#weight'] = $entity->getWeight();
     $row['name'] = $entity->label();
     $row['status'] = $entity->isEnabled() ? $this->t('Enabled') : $this->t('Disabled');
