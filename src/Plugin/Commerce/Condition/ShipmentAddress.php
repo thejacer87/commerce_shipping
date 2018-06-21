@@ -13,9 +13,9 @@ use Drupal\Core\Form\FormStateInterface;
  * @CommerceCondition(
  *   id = "shipment_address",
  *   label = @Translation("Shipping address"),
- *   display_label = @Translation("Limit by shipping address"),
  *   category = @Translation("Customer"),
  *   entity_type = "commerce_shipment",
+ *   weight = 10,
  * )
  */
 class ShipmentAddress extends ConditionBase {
