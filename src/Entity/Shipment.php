@@ -31,7 +31,8 @@ use Drupal\profile\Entity\ProfileInterface;
  *   handlers = {
  *     "storage" = "Drupal\commerce_shipping\ShipmentStorage",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
- *     "views_data" = "Drupal\views\EntityViewsData"
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "commerce_shipment",
  *   admin_permission = "administer commerce_shipment",
@@ -41,6 +42,10 @@ use Drupal\profile\Entity\ProfileInterface;
  *     "bundle" = "type",
  *     "label" = "title",
  *     "uuid" = "uuid",
+ *   },
+ *   links = {
+ *     "collection" = "/admin/commerce/orders/{commerce_order}/shipments",
+ *     "edit-form" = "/admin/commerce/orders/{commerce_order}/shipments/{commerce_shipment}/edit",
  *   },
  *   bundle_entity_type = "commerce_shipment_type",
  *   field_ui_base_route = "entity.commerce_shipment_type.edit_form",
@@ -498,6 +503,10 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setDescription(t('The shipment tracking code.'))
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 20,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
