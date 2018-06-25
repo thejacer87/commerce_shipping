@@ -41,3 +41,16 @@ entity.commerce_shipment.collection:
         type: 'entity:commerce_order'
   requirements:
     _permission: 'administer commerce_shipment'
+
+entity.commerce_shipment.edit_form:
+  path: '/admin/commerce/orders/{commerce_order}/shipment/{commerce_shipment}/edit'
+  defaults:
+    _entity_form: 'commerce_shipment.default'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      commerce_shipment:
+        type: 'entity:commerce_shipment'
+  requirements:
+    _commerce_shipment_operation_access: 'TRUE'
