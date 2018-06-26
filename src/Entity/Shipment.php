@@ -29,10 +29,17 @@ use Drupal\profile\Entity\ProfileInterface;
  *   ),
  *   bundle_label = @Translation("Shipment type"),
  *   handlers = {
+ *     "access" = "Drupal\commerce_shipping\ShipmentAccessControlHandler",
  *     "storage" = "Drupal\commerce_shipping\ShipmentStorage",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "list_builder" = "Drupal\commerce_shipping\ShipmentListBuilder",
+ *     "route_provider" = {
+ *       "default" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
+ *     },
+ *     "form" = {
+ *       "default" = "Drupal\Core\Entity\ContentEntityForm",
+ *     },
  *   },
  *   base_table = "commerce_shipment",
  *   admin_permission = "administer commerce_shipment",

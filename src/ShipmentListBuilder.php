@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_shipping;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -22,6 +23,13 @@ class ShipmentListBuilder extends EntityListBuilder {
   protected $routeMatch;
 
   /**
+   * The date formatter.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected $dateFormatter;
+
+  /**
    * Constructs a new PaymentListBuilder object.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -30,11 +38,14 @@ class ShipmentListBuilder extends EntityListBuilder {
    *   The entity storage class.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The date formatter.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage,  RouteMatchInterface $route_match) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RouteMatchInterface $route_match, DateFormatterInterface $date_formatter) {
     parent::__construct($entity_type, $storage);
 
     $this->routeMatch = $route_match;
+    $this->dateFormatter = $date_formatter;
   }
 
   /**
@@ -44,7 +55,8 @@ class ShipmentListBuilder extends EntityListBuilder {
     return new static(
       $entity_type,
       $container->get('entity.manager')->getStorage($entity_type->id()),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('date.formatter')
     );
   }
 
@@ -63,13 +75,19 @@ class ShipmentListBuilder extends EntityListBuilder {
     /** @var \Drupal\commerce_shipping\Entity\Shipment $entity */
     $operations = parent::getOperations($entity);
 
-    if (isset($operations['edit'])) {
-      $operations['edit'] = [
-        'title' => $this->t('Edit'),
-        'weight' => 30,
-        'url' => $entity->toUrl('edit-form')->setRouteParameter('commerce_order', $entity->getOrderId()),
-      ];
+    if (!isset($operations['edit'])) {
+      return $operations;
     }
+
+    $url = $entity->toUrl('edit-form')->setRouteParameter(
+      'commerce_order',
+      $entity->getOrderId()
+    );
+    $operations['edit'] = [
+      'title' => $this->t('Edit'),
+      'weight' => 30,
+      'url' => $url,
+    ];
 
     return $operations;
   }
@@ -79,8 +97,10 @@ class ShipmentListBuilder extends EntityListBuilder {
    */
   public function buildHeader() {
     $header['label'] = $this->t('Shipment');
+    $header['state'] = $this->t('State');
     $header['items'] = $this->t('Items');
-    $header['tracking_code'] = $this->t('Tracking Pin');
+    $header['tracking_code'] = $this->t('Tracking Code');
+    $header['last_updated'] = $this->t('Last Updated');
     return $header + parent::buildHeader();
   }
 
@@ -96,8 +116,10 @@ class ShipmentListBuilder extends EntityListBuilder {
     }
 
     $row['label'] = $entity->getTitle();
+    $row['state'] = $entity->getState()->getLabel();
     $row['items'] = implode(",\n", $items);
-    $row['tracking_code'] = $entity->getTrackingCode() ? $entity->getTrackingCode() : 'N/A';
+    $row['tracking_code'] = $entity->getTrackingCode() ?: '';
+    $row['last_updated'] = $this->dateFormatter->format($entity->getChangedTime(), 'short');
 
     return $row + parent::buildRow($entity);
   }

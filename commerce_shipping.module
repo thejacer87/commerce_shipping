@@ -68,19 +68,24 @@ function commerce_shipping_field_widget_form_alter(&$element, FormStateInterface
  * Implements hook_entity_operation().
  */
 function commerce_shipping_entity_operation(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() === 'commerce_order') {
-    if (\Drupal::currentUser()->hasPermission('administer commerce_shipment')) {
-      $operations = [];
-      $operations['shipments'] = [
-        'title' => t('Shipments'),
-        'url' => Url::fromRoute('entity.commerce_shipment.collection', [
-          'commerce_order' => $entity->id(),
-        ]),
-        'weight' => 50,
-      ];
-      return $operations;
-    }
+  if ($entity->getEntityTypeId() !== 'commerce_order') {
+    return;
   }
+
+  if (\Drupal::currentUser()->hasPermission('administer commerce_shipment')) {
+    return;
+  }
+
+  $operations = [];
+  $operations['shipments'] = [
+    'title' => t('Shipments'),
+    'url' => Url::fromRoute('entity.commerce_shipment.collection', [
+      'commerce_order' => $entity->id(),
+    ]),
+    'weight' => 50,
+  ];
+
+  return $operations;
 }
 
 /**
