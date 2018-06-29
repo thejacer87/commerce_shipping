@@ -29,3 +29,15 @@ entity.commerce_shipment_type.collection:
     _title: 'Shipment types'
   requirements:
     _permission: 'administer commerce_shipment_type'
+
+entity.commerce_shipment.collection:
+  path: '/admin/commerce/orders/{commerce_order}/shipments'
+  defaults:
+    _entity_list: 'commerce_shipment'
+    _title: 'Shipments'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+  requirements:
+    _permission: 'administer commerce_shipment'
